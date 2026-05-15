@@ -1,5 +1,5 @@
 <svg width="390" height="150" viewBox="0 0 390 150" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Generated GitHub profile card">
-  <rect x="1" y="1" width="388" height="148" rx="18" fill="rgba(255,255,255,0.02)" stroke="#d0d7de"/>
+  <rect x="1" y="1" width="388" height="148" rx="18" fill="#ffffff" fill-opacity="0.02" stroke="#d0d7de"/>
   <style>
     .title { font: 700 24px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #111827; }
     .subtitle { font: 500 13px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #6b7280; }
@@ -13,8 +13,8 @@
   <text x="28" y="70" class="body">Bringing Resources to the Map. The</text><text x="28" y="90" class="body">Ant Map</text>
   <circle cx="34" cy="128" r="6" fill="#663399"/>
   <text x="48" y="133" class="small">CSS</text>
-  <text x="150" y="133" class="small">★ 0</text>
-  <text x="220" y="133" class="small">⑂ 0</text>
-  <text x="284" y="133" class="small">Updated Dec 2014</text>
+  <text x="176" y="133" class="small">Stars 0</text>
+  <text x="246" y="133" class="small">Forks 0</text>
+  <text x="318" y="133" class="small">Dec 2014</text>
 
 </svg>

@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import json
-import math
 import os
 import textwrap
 import xml.sax.saxutils as xml_utils
@@ -10,6 +9,7 @@ from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from urllib.error import HTTPError
 from urllib.request import Request, urlopen
+from xml.etree import ElementTree
 
 
 OWNER = os.environ.get("GITHUB_REPOSITORY_OWNER", "AbdusM")
@@ -65,8 +65,12 @@ def wrap_text(text: str, width: int, max_lines: int) -> list[str]:
     lines = textwrap.wrap(cleaned, width=width)
     if len(lines) > max_lines:
         lines = lines[:max_lines]
-        lines[-1] = lines[-1].rstrip(".") + "…"
+        lines[-1] = lines[-1].rstrip(".") + "..."
     return lines
+
+
+def repo_asset_name(repo_name: str) -> str:
+    return f"repo-{repo_name.lower().replace('_', '-').replace('.', '-')}.svg"
 
 
 def month_start(day: date) -> date:
@@ -79,7 +83,7 @@ def add_months(day: date, count: int) -> date:
     return date(year, month, 1)
 
 
-def compute_streaks(contribution_days: list[dict]) -> tuple[int, int]:
+def compute_streaks(contribution_days: list[dict], reference_date: date) -> tuple[int, int]:
     days = sorted(
         [(datetime.fromisoformat(item["date"]).date(), item["contributionCount"]) for item in contribution_days],
         key=lambda item: item[0],
@@ -95,9 +99,8 @@ def compute_streaks(contribution_days: list[dict]) -> tuple[int, int]:
             current_run = 0
 
     current = 0
-    today = date.today()
     reversed_days = list(reversed(days))
-    if reversed_days and reversed_days[0][0] == today and reversed_days[0][1] == 0:
+    if reversed_days and reversed_days[0][0] == reference_date and reversed_days[0][1] == 0:
         reversed_days = reversed_days[1:]
     for _, count in reversed_days:
         if count > 0:
@@ -110,7 +113,7 @@ def compute_streaks(contribution_days: list[dict]) -> tuple[int, int]:
 
 def card_shell(width: int, height: int, content: str) -> str:
     return f"""<svg width="{width}" height="{height}" viewBox="0 0 {width} {height}" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Generated GitHub profile card">
-  <rect x="1" y="1" width="{width - 2}" height="{height - 2}" rx="18" fill="rgba(255,255,255,0.02)" stroke="#d0d7de"/>
+  <rect x="1" y="1" width="{width - 2}" height="{height - 2}" rx="18" fill="#ffffff" fill-opacity="0.02" stroke="#d0d7de"/>
   <style>
     .title {{ font: 700 24px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #111827; }}
     .subtitle {{ font: 500 13px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #6b7280; }}
@@ -210,20 +213,20 @@ def generate_repo_card(repo: dict) -> str:
   {''.join(description_svg)}
   <circle cx="34" cy="128" r="6" fill="{language_color}"/>
   <text x="48" y="133" class="small">{esc(language_name)}</text>
-  <text x="150" y="133" class="small">★ {repo['stargazerCount']}</text>
-  <text x="220" y="133" class="small">⑂ {repo['forkCount']}</text>
-  <text x="284" y="133" class="small">Updated {esc(updated)}</text>
+  <text x="176" y="133" class="small">Stars {repo['stargazerCount']}</text>
+  <text x="246" y="133" class="small">Forks {repo['forkCount']}</text>
+  <text x="318" y="133" class="small">{esc(updated)}</text>
 """
     return card_shell(390, 150, content)
 
 
-def build_monthly_counts(contribution_days: list[dict]) -> list[tuple[str, int]]:
+def build_monthly_counts(contribution_days: list[dict], reference_date: date) -> list[tuple[str, int]]:
     counts_by_month: dict[date, int] = defaultdict(int)
     for item in contribution_days:
         day = datetime.fromisoformat(item["date"]).date()
         counts_by_month[month_start(day)] += item["contributionCount"]
 
-    current = month_start(date.today())
+    current = month_start(reference_date)
     start = add_months(current, -11)
     months = []
     for index in range(12):
@@ -232,11 +235,31 @@ def build_monthly_counts(contribution_days: list[dict]) -> list[tuple[str, int]]
     return months
 
 
+def validate_generated_assets(expected_files: list[Path]) -> None:
+    missing = [path for path in expected_files if not path.exists()]
+    if missing:
+        names = ", ".join(str(path.relative_to(ROOT)) for path in missing)
+        raise SystemExit(f"Missing generated assets: {names}")
+
+    for path in expected_files:
+        try:
+            ElementTree.parse(path)
+        except ElementTree.ParseError as exc:
+            raise SystemExit(f"Invalid SVG XML in {path.relative_to(ROOT)}: {exc}") from exc
+
+        content = path.read_text(encoding="utf-8")
+        try:
+            content.encode("ascii")
+        except UnicodeEncodeError as exc:
+            raise SystemExit(f"Non-ASCII SVG content in {path.relative_to(ROOT)}: {exc}") from exc
+
+
 def main() -> None:
     OUT_DIR.mkdir(exist_ok=True)
 
-    today = datetime.now(timezone.utc)
-    last_year = today - timedelta(days=365)
+    now = datetime.now(timezone.utc)
+    today = now.date()
+    last_year = now - timedelta(days=365)
     query = """
     query ProfileData($login: String!, $from: DateTime!, $to: DateTime!) {
       user(login: $login) {
@@ -282,12 +305,16 @@ def main() -> None:
         {
             "login": OWNER,
             "from": last_year.isoformat(),
-            "to": today.isoformat(),
+            "to": now.isoformat(),
         },
     )
 
     user = data["user"]
     repositories = {repo["name"]: repo for repo in user["repositories"]["nodes"]}
+    missing_featured = [repo_name for repo_name in FEATURED_REPOS if repo_name not in repositories]
+    if missing_featured:
+        raise SystemExit(f"Missing featured public repositories: {', '.join(missing_featured)}")
+
     contribution_days = [
         day
         for week in user["contributionsCollection"]["contributionCalendar"]["weeks"]
@@ -305,8 +332,8 @@ def main() -> None:
         "followers": user["followers"]["totalCount"],
     }
 
-    current_streak, longest_streak = compute_streaks(contribution_days)
-    monthly_counts = build_monthly_counts(contribution_days)
+    current_streak, longest_streak = compute_streaks(contribution_days, today)
+    monthly_counts = build_monthly_counts(contribution_days, today)
 
     (OUT_DIR / "stats.svg").write_text(generate_stats_svg(user, totals), encoding="utf-8")
     (OUT_DIR / "activity.svg").write_text(
@@ -315,11 +342,16 @@ def main() -> None:
     )
 
     for repo_name in FEATURED_REPOS:
-        repo = repositories.get(repo_name)
-        if not repo:
-            continue
-        file_name = f"repo-{repo_name.lower().replace('_', '-').replace('.', '-')}.svg"
+        repo = repositories[repo_name]
+        file_name = repo_asset_name(repo_name)
         (OUT_DIR / file_name).write_text(generate_repo_card(repo), encoding="utf-8")
+
+    expected_files = [
+        OUT_DIR / "stats.svg",
+        OUT_DIR / "activity.svg",
+        *(OUT_DIR / repo_asset_name(repo_name) for repo_name in FEATURED_REPOS),
+    ]
+    validate_generated_assets(expected_files)
 
 
 if __name__ == "__main__":
