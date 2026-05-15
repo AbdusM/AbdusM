@@ -1,0 +1,20 @@
+<svg width="390" height="150" viewBox="0 0 390 150" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Generated GitHub profile card">
+  <rect x="1" y="1" width="388" height="148" rx="18" fill="rgba(255,255,255,0.02)" stroke="#d0d7de"/>
+  <style>
+    .title { font: 700 24px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #111827; }
+    .subtitle { font: 500 13px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #6b7280; }
+    .label { font: 600 12px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #6b7280; text-transform: uppercase; letter-spacing: 0.12em; }
+    .value { font: 700 28px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #111827; }
+    .small { font: 600 13px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #374151; }
+    .body { font: 500 14px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #374151; }
+  </style>
+  
+  <text x="28" y="36" class="title">uForage</text>
+  <text x="28" y="70" class="body">Bringing Resources to the Map. The</text><text x="28" y="90" class="body">Ant Map</text>
+  <circle cx="34" cy="128" r="6" fill="#663399"/>
+  <text x="48" y="133" class="small">CSS</text>
+  <text x="150" y="133" class="small">★ 0</text>
+  <text x="220" y="133" class="small">⑂ 0</text>
+  <text x="284" y="133" class="small">Updated Dec 2014</text>
+
+</svg>

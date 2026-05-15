@@ -21,33 +21,36 @@
 ## Activity
 
 <p align="center">
-  <img height="170" src="https://github-readme-stats.vercel.app/api?username=AbdusM&show_icons=true&include_all_commits=true&rank_icon=github&theme=transparent&hide_border=true" alt="GitHub stats" />
-  <img height="170" src="https://streak-stats.demolab.com?user=AbdusM&theme=transparent&hide_border=true&short_numbers=true" alt="GitHub streak stats" />
+  <img width="100%" src="./profile/stats.svg" alt="GitHub stats" />
 </p>
 
-[![Contribution activity graph](https://github-readme-activity-graph.vercel.app/graph?username=AbdusM&bg_color=00000000&color=2563eb&line=2563eb&point=1d4ed8&area=true&hide_border=true&custom_title=Recent%20Contribution%20Activity)](https://github.com/AbdusM)
-
-[![GitHub trophies](https://github-profile-trophy.vercel.app/?username=AbdusM&theme=flat&no-frame=true&no-bg=true&row=1&column=6)](https://github.com/ryo-ma/github-profile-trophy)
+<p align="center">
+  <img width="100%" src="./profile/activity.svg" alt="GitHub activity" />
+</p>
 
 ## Featured Public Work
 
 <p align="center">
   <a href="https://github.com/AbdusM/cloudflare-bot-blocker">
-    <img height="135" src="https://github-readme-stats.vercel.app/api/pin/?username=AbdusM&repo=cloudflare-bot-blocker&theme=transparent&hide_border=true" alt="cloudflare-bot-blocker" />
+    <img src="./profile/repo-cloudflare-bot-blocker.svg" alt="cloudflare-bot-blocker" />
   </a>
   <a href="https://github.com/AbdusM/park-vintage-data-lab">
-    <img height="135" src="https://github-readme-stats.vercel.app/api/pin/?username=AbdusM&repo=park-vintage-data-lab&theme=transparent&hide_border=true" alt="park-vintage-data-lab" />
+    <img src="./profile/repo-park-vintage-data-lab.svg" alt="park-vintage-data-lab" />
   </a>
 </p>
 
 <p align="center">
   <a href="https://github.com/AbdusM/lux-story">
-    <img height="135" src="https://github-readme-stats.vercel.app/api/pin/?username=AbdusM&repo=lux-story&theme=transparent&hide_border=true" alt="lux-story" />
+    <img src="./profile/repo-lux-story.svg" alt="lux-story" />
+  </a>
+  <a href="https://github.com/AbdusM/uForage">
+    <img src="./profile/repo-uforage.svg" alt="uForage" />
   </a>
 </p>
 
 ## Notes
 
+- Visual cards are auto-generated from public GitHub data on a daily schedule
 - Public cards highlight open work; private repositories stay private
 - Private contribution counts can still appear on the profile if enabled in GitHub contribution settings
 

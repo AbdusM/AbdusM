@@ -1,0 +1,46 @@
+<svg width="800" height="240" viewBox="0 0 800 240" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Generated GitHub profile card">
+  <rect x="1" y="1" width="798" height="238" rx="18" fill="rgba(255,255,255,0.02)" stroke="#d0d7de"/>
+  <style>
+    .title { font: 700 24px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #111827; }
+    .subtitle { font: 500 13px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #6b7280; }
+    .label { font: 600 12px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #6b7280; text-transform: uppercase; letter-spacing: 0.12em; }
+    .value { font: 700 28px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #111827; }
+    .small { font: 600 13px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #374151; }
+    .body { font: 500 14px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #374151; }
+  </style>
+  
+  <text x="36" y="42" class="title">Public GitHub Snapshot</text>
+  <text x="36" y="64" class="subtitle">Auto-generated from public GitHub data for AbdusM</text>
+  
+  <g transform="translate(36 88)">
+    <rect width="230" height="64" rx="14" fill="#f8fafc" stroke="#e5e7eb"/>
+    <text x="16" y="24" class="label">Public repos</text>
+    <text x="16" y="50" class="value">9</text>
+  </g>
+  <g transform="translate(284 88)">
+    <rect width="230" height="64" rx="14" fill="#f8fafc" stroke="#e5e7eb"/>
+    <text x="16" y="24" class="label">Total stars</text>
+    <text x="16" y="50" class="value">19</text>
+  </g>
+  <g transform="translate(532 88)">
+    <rect width="230" height="64" rx="14" fill="#f8fafc" stroke="#e5e7eb"/>
+    <text x="16" y="24" class="label">12m contributions</text>
+    <text x="16" y="50" class="value">1667</text>
+  </g>
+  <g transform="translate(36 172)">
+    <rect width="230" height="64" rx="14" fill="#f8fafc" stroke="#e5e7eb"/>
+    <text x="16" y="24" class="label">12m commits</text>
+    <text x="16" y="50" class="value">1609</text>
+  </g>
+  <g transform="translate(284 172)">
+    <rect width="230" height="64" rx="14" fill="#f8fafc" stroke="#e5e7eb"/>
+    <text x="16" y="24" class="label">12m PRs</text>
+    <text x="16" y="50" class="value">53</text>
+  </g>
+  <g transform="translate(532 172)">
+    <rect width="230" height="64" rx="14" fill="#f8fafc" stroke="#e5e7eb"/>
+    <text x="16" y="24" class="label">12m reviews</text>
+    <text x="16" y="50" class="value">0</text>
+  </g>
+
+</svg>
