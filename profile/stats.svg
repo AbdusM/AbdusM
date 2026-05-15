@@ -9,8 +9,8 @@
     .body { font: 500 14px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #374151; }
   </style>
   
-  <text x="36" y="42" class="title">Public GitHub Snapshot</text>
-  <text x="36" y="64" class="subtitle">Auto-generated from public GitHub data for AbdusM</text>
+  <text x="36" y="42" class="title">GitHub Visual Snapshot</text>
+  <text x="36" y="64" class="subtitle">June cycle: Jun 1, 2025 to May 15, 2026</text>
   
   <g transform="translate(36 88)">
     <rect width="230" height="64" rx="14" fill="#f8fafc" stroke="#e5e7eb"/>
@@ -24,22 +24,22 @@
   </g>
   <g transform="translate(532 88)">
     <rect width="230" height="64" rx="14" fill="#f8fafc" stroke="#e5e7eb"/>
-    <text x="16" y="24" class="label">12m contributions</text>
+    <text x="16" y="24" class="label">Cycle contributions</text>
     <text x="16" y="50" class="value">1670</text>
   </g>
   <g transform="translate(36 172)">
     <rect width="230" height="64" rx="14" fill="#f8fafc" stroke="#e5e7eb"/>
-    <text x="16" y="24" class="label">12m commits</text>
+    <text x="16" y="24" class="label">Cycle commits</text>
     <text x="16" y="50" class="value">1612</text>
   </g>
   <g transform="translate(284 172)">
     <rect width="230" height="64" rx="14" fill="#f8fafc" stroke="#e5e7eb"/>
-    <text x="16" y="24" class="label">12m PRs</text>
+    <text x="16" y="24" class="label">Cycle PRs</text>
     <text x="16" y="50" class="value">53</text>
   </g>
   <g transform="translate(532 172)">
     <rect width="230" height="64" rx="14" fill="#f8fafc" stroke="#e5e7eb"/>
-    <text x="16" y="24" class="label">12m reviews</text>
+    <text x="16" y="24" class="label">Cycle reviews</text>
     <text x="16" y="50" class="value">0</text>
   </g>
 

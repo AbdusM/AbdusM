@@ -5,7 +5,7 @@ import os
 import textwrap
 import xml.sax.saxutils as xml_utils
 from collections import defaultdict
-from datetime import date, datetime, timedelta, timezone
+from datetime import date, datetime, timezone
 from pathlib import Path
 from urllib.error import HTTPError
 from urllib.request import Request, urlopen
@@ -83,6 +83,16 @@ def add_months(day: date, count: int) -> date:
     return date(year, month, 1)
 
 
+def june_cycle_start(reference_date: date) -> date:
+    if reference_date.month > 6:
+        return date(reference_date.year, 6, 1)
+    return date(reference_date.year - 1, 6, 1)
+
+
+def period_label(start: date, end: date) -> str:
+    return f"{start.strftime('%b')} {start.day}, {start.year} to {end.strftime('%b')} {end.day}, {end.year}"
+
+
 def compute_streaks(contribution_days: list[dict], reference_date: date) -> tuple[int, int]:
     days = sorted(
         [(datetime.fromisoformat(item["date"]).date(), item["contributionCount"]) for item in contribution_days],
@@ -127,14 +137,14 @@ def card_shell(width: int, height: int, content: str) -> str:
 """
 
 
-def generate_stats_svg(user: dict, totals: dict) -> str:
+def generate_stats_svg(user: dict, totals: dict, start: date, end: date) -> str:
     metrics = [
         ("Public repos", str(totals["public_repo_count"])),
         ("Total stars", str(totals["total_stars"])),
-        ("12m contributions", str(totals["total_contributions"])),
-        ("12m commits", str(totals["commits"])),
-        ("12m PRs", str(totals["pull_requests"])),
-        ("12m reviews", str(totals["reviews"])),
+        ("Cycle contributions", str(totals["total_contributions"])),
+        ("Cycle commits", str(totals["commits"])),
+        ("Cycle PRs", str(totals["pull_requests"])),
+        ("Cycle reviews", str(totals["reviews"])),
     ]
 
     blocks = []
@@ -156,21 +166,30 @@ def generate_stats_svg(user: dict, totals: dict) -> str:
   </g>"""
         )
 
-    subtitle = f"Auto-generated from public GitHub data for {user['login']}"
+    subtitle = f"June cycle: {period_label(start, end)}"
     content = f"""
-  <text x="36" y="42" class="title">Public GitHub Snapshot</text>
+  <text x="36" y="42" class="title">GitHub Visual Snapshot</text>
   <text x="36" y="64" class="subtitle">{esc(subtitle)}</text>
   {''.join(blocks)}
 """
     return card_shell(800, 240, content)
 
 
-def generate_activity_svg(monthly_counts: list[tuple[str, int]], current_streak: int, longest_streak: int) -> str:
+def generate_activity_svg(
+    monthly_counts: list[tuple[str, int]],
+    current_streak: int,
+    longest_streak: int,
+    start: date,
+    end: date,
+) -> str:
     max_count = max((count for _, count in monthly_counts), default=1)
     chart_left = 40
     chart_bottom = 210
-    bar_width = 42
-    gap = 19
+    chart_right = 760
+    chart_width = chart_right - chart_left
+    slot_count = max(len(monthly_counts), 1)
+    gap = 14 if slot_count > 12 else 19
+    bar_width = min(42, (chart_width - gap * (slot_count - 1)) / slot_count)
     bars = []
     labels = []
     for index, (label, count) in enumerate(monthly_counts):
@@ -182,8 +201,8 @@ def generate_activity_svg(monthly_counts: list[tuple[str, int]], current_streak:
         labels.append(f'<text x="{x + bar_width / 2}" y="{y - 8}" text-anchor="middle" class="small">{count}</text>')
 
     content = f"""
-  <text x="36" y="42" class="title">12-Month Activity</text>
-  <text x="36" y="64" class="subtitle">Public contributions grouped by month</text>
+  <text x="36" y="42" class="title">June Cycle Activity</text>
+  <text x="36" y="64" class="subtitle">{esc(period_label(start, end))}</text>
   <g transform="translate(572 24)">
     <rect width="188" height="88" rx="16" fill="#f8fafc" stroke="#e5e7eb"/>
     <text x="18" y="28" class="label">Current streak</text>
@@ -191,7 +210,7 @@ def generate_activity_svg(monthly_counts: list[tuple[str, int]], current_streak:
     <text x="102" y="28" class="label">Longest streak</text>
     <text x="102" y="56" class="value">{longest_streak}</text>
   </g>
-  <line x1="{chart_left}" y1="{chart_bottom}" x2="760" y2="{chart_bottom}" stroke="#d1d5db"/>
+  <line x1="{chart_left}" y1="{chart_bottom}" x2="{chart_right}" y2="{chart_bottom}" stroke="#d1d5db"/>
   {''.join(bars)}
   {''.join(labels)}
 """
@@ -220,18 +239,19 @@ def generate_repo_card(repo: dict) -> str:
     return card_shell(390, 150, content)
 
 
-def build_monthly_counts(contribution_days: list[dict], reference_date: date) -> list[tuple[str, int]]:
+def build_monthly_counts(contribution_days: list[dict], start: date, end: date) -> list[tuple[str, int]]:
     counts_by_month: dict[date, int] = defaultdict(int)
     for item in contribution_days:
         day = datetime.fromisoformat(item["date"]).date()
+        if day < start or day > end:
+            continue
         counts_by_month[month_start(day)] += item["contributionCount"]
 
-    current = month_start(reference_date)
-    start = add_months(current, -11)
     months = []
-    for index in range(12):
+    month_count = (end.year - start.year) * 12 + end.month - start.month + 1
+    for index in range(month_count):
         bucket = add_months(start, index)
-        months.append((bucket.strftime("%b"), counts_by_month.get(bucket, 0)))
+        months.append((bucket.strftime("%b '%y"), counts_by_month.get(bucket, 0)))
     return months
 
 
@@ -259,7 +279,8 @@ def main() -> None:
 
     now = datetime.now(timezone.utc)
     today = now.date()
-    last_year = now - timedelta(days=365)
+    cycle_start = june_cycle_start(today)
+    cycle_start_datetime = datetime(cycle_start.year, cycle_start.month, cycle_start.day, tzinfo=timezone.utc)
     query = """
     query ProfileData($login: String!, $from: DateTime!, $to: DateTime!) {
       user(login: $login) {
@@ -304,7 +325,7 @@ def main() -> None:
         query,
         {
             "login": OWNER,
-            "from": last_year.isoformat(),
+            "from": cycle_start_datetime.isoformat(),
             "to": now.isoformat(),
         },
     )
@@ -333,11 +354,11 @@ def main() -> None:
     }
 
     current_streak, longest_streak = compute_streaks(contribution_days, today)
-    monthly_counts = build_monthly_counts(contribution_days, today)
+    monthly_counts = build_monthly_counts(contribution_days, cycle_start, today)
 
-    (OUT_DIR / "stats.svg").write_text(generate_stats_svg(user, totals), encoding="utf-8")
+    (OUT_DIR / "stats.svg").write_text(generate_stats_svg(user, totals, cycle_start, today), encoding="utf-8")
     (OUT_DIR / "activity.svg").write_text(
-        generate_activity_svg(monthly_counts, current_streak, longest_streak),
+        generate_activity_svg(monthly_counts, current_streak, longest_streak, cycle_start, today),
         encoding="utf-8",
     )
 
