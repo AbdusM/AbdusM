@@ -10,11 +10,11 @@
   </style>
   
   <text x="36" y="42" class="title">June Cycle Activity</text>
-  <text x="36" y="64" class="subtitle">Jun 1, 2025 to May 16, 2026</text>
+  <text x="36" y="64" class="subtitle">Jun 1, 2025 to May 17, 2026</text>
   <g transform="translate(572 24)">
     <rect width="188" height="88" rx="16" fill="#f8fafc" stroke="#e5e7eb"/>
     <text x="18" y="28" class="label">Current streak</text>
-    <text x="18" y="56" class="value">2</text>
+    <text x="18" y="56" class="value">0</text>
     <text x="102" y="28" class="label">Longest streak</text>
     <text x="102" y="56" class="value">10</text>
   </g>
